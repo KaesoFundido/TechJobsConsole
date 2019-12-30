@@ -2,6 +2,8 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System;
+using System.Linq;
 
 namespace TechJobsConsole
 {
@@ -20,6 +22,27 @@ namespace TechJobsConsole
          * Returns a list of all values contained in a given column,
          * without duplicates. 
          */
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+            foreach (Dictionary<string, string> row in AllJobs)
+            {
+                foreach (KeyValuePair<string, string> kvp in row)
+                {
+                    StringComparison comp = StringComparison.OrdinalIgnoreCase;
+                    if (kvp.Value.IndexOf(value, comp) >= 0)
+                    {
+                        if (!jobs.Contains(row))
+                        {
+                            jobs.Add(row);
+                        }
+                    }
+                }
+            }
+            return jobs;
+        }
         public static List<string> FindAll(string column)
         {
             LoadData();
@@ -47,9 +70,9 @@ namespace TechJobsConsole
 
             foreach (Dictionary<string, string> row in AllJobs)
             {
+                StringComparison comp = StringComparison.OrdinalIgnoreCase;
                 string aValue = row[column];
-
-                if (aValue.Contains(value))
+                if (aValue.IndexOf(value, comp) >= 0) 
                 {
                     jobs.Add(row);
                 }
